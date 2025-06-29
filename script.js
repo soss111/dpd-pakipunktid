@@ -21,7 +21,7 @@ window.addEventListener("DOMContentLoaded", () => {
   otsing.addEventListener("input", () => {
     const q = otsing.value.toLowerCase();
     const filtreeritud = andmed.filter(p =>
-      (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(q)
+      (p.companyName + p.Address + p.City + p.Country).toLowerCase().includes(q)
     );
     uuendaAndmed(filtreeritud);
   });
@@ -39,7 +39,7 @@ window.addEventListener("DOMContentLoaded", () => {
     punktid.forEach(p => {
       const rida = document.createElement("tr");
       rida.innerHTML = `
-        <td>${p.Name || "-"}</td>
+        <td>${p.companyName || "-"}</td>
         <td>${p.Address || "-"}</td>
         <td>${p.City || "-"}</td>
         <td>${p.Country || "-"}</td>
@@ -49,7 +49,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (p.Latitude && p.Longitude) {
         const marker = L.marker([p.Latitude, p.Longitude])
           .addTo(kaart)
-          .bindPopup(`<strong>${p.Name}</strong><br>${p.Address}, ${p.City}`);
+          .bindPopup(`<strong>${p.companyName}</strong><br>${p.Address}, ${p.City}`);
         markerid.push(marker);
       }
     });
