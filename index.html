@@ -2,39 +2,34 @@
 <html lang="et">
 <head>
   <meta charset="UTF-8">
-  <title>DPD pakiautomaadid</title>
+  <title>DPD pakiautomaadid kaardil</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body { font-family: sans-serif; padding: 20px; }
+    #kaart { height: 600px; margin-top: 20px; }
     input { padding: 6px; width: 300px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-    th { background-color: #f0f0f0; }
   </style>
 </head>
 <body>
   <h2>Otsi DPD pakiautomaate</h2>
   <input type="text" id="otsing" placeholder="Sisesta linn või aadress..." oninput="filtreeri()">
+  <div id="kaart"></div>
 
-  <table id="tabel">
-    <thead>
-      <tr>
-        <th>Nimi</th>
-        <th>Aadress</th>
-        <th>Linn</th>
-        <th>Riik</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
+    const kaart = L.map('kaart').setView([58.5953, 25.0136], 6); // Eesti keskpunkt
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(kaart);
+
     let kõikAndmed = [];
+    let markerid = [];
 
     fetch('https://dpdbaltics.com/PickupParcelShopData.json')
       .then(res => res.json())
       .then(data => {
         kõikAndmed = data;
-        kuvaTabel(data);
+        kuvaMarkerid(data);
       });
 
     function filtreeri() {
@@ -42,21 +37,20 @@
       const filtreeritud = kõikAndmed.filter(p =>
         (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(sisend)
       );
-      kuvaTabel(filtreeritud);
+      kuvaMarkerid(filtreeritud);
     }
 
-    function kuvaTabel(andmed) {
-      const tbody = document.querySelector("#tabel tbody");
-      tbody.innerHTML = "";
+    function kuvaMarkerid(andmed) {
+      markerid.forEach(m => kaart.removeLayer(m));
+      markerid = [];
+
       andmed.forEach(p => {
-        const rida = document.createElement("tr");
-        rida.innerHTML = `
-          <td>${p.Name}</td>
-          <td>${p.Address}</td>
-          <td>${p.City}</td>
-          <td>${p.Country}</td>
-        `;
-        tbody.appendChild(rida);
+        if (p.Latitude && p.Longitude) {
+          const m = L.marker([p.Latitude, p.Longitude])
+            .addTo(kaart)
+            .bindPopup(`<strong>${p.Name}</strong><br>${p.Address}, ${p.City}`);
+          markerid.push(m);
+        }
       });
     }
   </script>
