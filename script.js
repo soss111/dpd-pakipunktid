@@ -1,42 +1,61 @@
-let pakikapid = [];
+let andmed = [];
+let markerid = [];
+let kaart;
 
 window.addEventListener("DOMContentLoaded", () => {
   const otsing = document.getElementById("otsing");
   const tbody = document.querySelector("#tabel tbody");
 
+  kaart = L.map("kaart").setView([58.5953, 25.0136], 6); // Eesti keskpunkt
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap"
+  }).addTo(kaart);
+
   fetch("pakiautomaadid.json")
     .then(res => res.json())
     .then(data => {
-      pakikapid = data;
-      kuvaTulemused(data);
-    })
-    .catch(() => {
-      tbody.innerHTML = `<tr><td colspan="4">❌ Andmete laadimine ebaõnnestus</td></tr>`;
+      andmed = data;
+      uuendaAndmed(andmed);
     });
 
   otsing.addEventListener("input", () => {
-    const filtritud = pakikapid.filter(p =>
-      (p.companyName + p.street + p.City + p.countryCode).toLowerCase().includes(otsing.value.toLowerCase())
+    const q = otsing.value.toLowerCase();
+    const filtreeritud = andmed.filter(p =>
+      (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(q)
     );
-    kuvaTulemused(filtritud);
+    uuendaAndmed(filtreeritud);
   });
 
-  function kuvaTulemused(andmed) {
+  function uuendaAndmed(punktid) {
     tbody.innerHTML = "";
-    if (andmed.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4">😕 Vastet ei leitud</td></tr>`;
+    markerid.forEach(m => kaart.removeLayer(m));
+    markerid = [];
+
+    if (punktid.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4">Ei leitud ühtegi tulemust</td></tr>`;
       return;
     }
 
-    andmed.forEach(p => {
+    punktid.forEach(p => {
       const rida = document.createElement("tr");
       rida.innerHTML = `
-        <td>${p.companyName}</td>
-        <td>${p.streets}</td>
-        <td>${p.City}</td>
-        <td>${p.countryCode}</td>
+        <td>${p.Name || "-"}</td>
+        <td>${p.Address || "-"}</td>
+        <td>${p.City || "-"}</td>
+        <td>${p.Country || "-"}</td>
       `;
       tbody.appendChild(rida);
+
+      if (p.Latitude && p.Longitude) {
+        const marker = L.marker([p.Latitude, p.Longitude])
+          .addTo(kaart)
+          .bindPopup(`<strong>${p.Name}</strong><br>${p.Address}, ${p.City}`);
+        markerid.push(marker);
+      }
     });
+
+    if (punktid[0].Latitude && punktid[0].Longitude) {
+      kaart.setView([punktid[0].Latitude, punktid[0].Longitude], 10);
+    }
   }
 });
