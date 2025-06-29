@@ -5,7 +5,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const tulemusteTabel = document.querySelector("#tabel tbody");
 
   // Lae pakiautomaatide andmestik
-  fetch("https://dpdbaltics.com/PickupParcelShopData.json")
+  fetch("pakiautomaadid.json")
+
+  //fetch("https://dpdbaltics.com/PickupParcelShopData.json")
     .then(res => res.json())
     .then(data => {
       kõikPakiautomaadid = data;
