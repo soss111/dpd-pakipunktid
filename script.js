@@ -1,37 +1,30 @@
-let kõikPakiautomaadid = [];
+let pakikapid = [];
 
 window.addEventListener("DOMContentLoaded", () => {
-  const otsingVäli = document.getElementById("otsing");
-  const tulemusteTabel = document.querySelector("#tabel tbody");
+  const otsing = document.getElementById("otsing");
+  const tbody = document.querySelector("#tabel tbody");
 
-  // Lae pakiautomaatide andmestik
   fetch("pakiautomaadid.json")
-
-  //fetch("https://dpdbaltics.com/PickupParcelShopData.json")
     .then(res => res.json())
     .then(data => {
-      kõikPakiautomaadid = data;
+      pakikapid = data;
       kuvaTulemused(data);
     })
-    .catch(err => {
-      tulemusteTabel.innerHTML = `<tr><td colspan="4">❌ Andmete laadimine ebaõnnestus</td></tr>`;
-      console.error("Viga:", err);
+    .catch(() => {
+      tbody.innerHTML = `<tr><td colspan="4">❌ Andmete laadimine ebaõnnestus</td></tr>`;
     });
 
-  // Reageeri sisestusele
-  otsingVäli.addEventListener("input", () => {
-    const sisend = otsingVäli.value.trim().toLowerCase();
-    const tulemused = kõikPakiautomaadid.filter(p =>
-      (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(sisend)
+  otsing.addEventListener("input", () => {
+    const filtritud = pakikapid.filter(p =>
+      (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(otsing.value.toLowerCase())
     );
-    kuvaTulemused(tulemused);
+    kuvaTulemused(filtritud);
   });
 
   function kuvaTulemused(andmed) {
-    tulemusteTabel.innerHTML = "";
-
+    tbody.innerHTML = "";
     if (andmed.length === 0) {
-      tulemusteTabel.innerHTML = `<tr><td colspan="4">😕 Ühtegi vastet ei leitud</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4">😕 Vastet ei leitud</td></tr>`;
       return;
     }
 
@@ -43,7 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
         <td>${p.City}</td>
         <td>${p.Country}</td>
       `;
-      tulemusteTabel.appendChild(rida);
+      tbody.appendChild(rida);
     });
   }
 });
