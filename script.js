@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   otsing.addEventListener("input", () => {
     const filtritud = pakikapid.filter(p =>
-      (p.companyName + p.Address + p.City + p.Country).toLowerCase().includes(otsing.value.toLowerCase())
+      (p.companyName + p.street + p.City + p.Country).toLowerCase().includes(otsing.value.toLowerCase())
     );
     kuvaTulemused(filtritud);
   });
@@ -32,7 +32,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const rida = document.createElement("tr");
       rida.innerHTML = `
         <td>${p.companyName}</td>
-        <td>${p.Address}</td>
+        <td>${p.streets}</td>
         <td>${p.City}</td>
         <td>${p.Country}</td>
       `;
