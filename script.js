@@ -2,7 +2,7 @@ let kõikPakiautomaadid = [];
 const otsingVäli = document.getElementById("otsing");
 const tulemusteTabel = document.querySelector("#tabel tbody");
 
-// Lae andmestik JSON-ist
+// Lae pakiautomaatide andmestik
 fetch("https://dpdbaltics.com/PickupParcelShopData.json")
   .then(res => res.json())
   .then(data => {
@@ -10,35 +10,35 @@ fetch("https://dpdbaltics.com/PickupParcelShopData.json")
     kuvaTulemused(data);
   })
   .catch(err => {
-    tulemusteTabel.innerHTML = `<tr><td colspan="4">Andmete laadimine ebaõnnestus 😞</td></tr>`;
+    tulemusteTabel.innerHTML = `<tr><td colspan="4">❌ Andmete laadimine ebaõnnestus</td></tr>`;
     console.error("Viga:", err);
   });
 
-// Otsingufunktsioon
+// Filtreeri otsingu põhjal
 function filtreeri() {
-  const sisestus = otsingVäli.value.trim().toLowerCase();
+  const sisend = otsingVäli.value.trim().toLowerCase();
   const tulemused = kõikPakiautomaadid.filter(p =>
-    (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(sisestus)
+    (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(sisend)
   );
   kuvaTulemused(tulemused);
 }
 
-// Kuvab tabelina
+// Kuvab andmed tabelina
 function kuvaTulemused(andmed) {
   tulemusteTabel.innerHTML = "";
 
   if (andmed.length === 0) {
-    tulemusteTabel.innerHTML = `<tr><td colspan="4">Ei leitud ühtegi vastet 🙁</td></tr>`;
+    tulemusteTabel.innerHTML = `<tr><td colspan="4">😕 Ühtegi vastet ei leitud</td></tr>`;
     return;
   }
 
-  andmed.forEach(punkt => {
+  andmed.forEach(p => {
     const rida = document.createElement("tr");
     rida.innerHTML = `
-      <td>${punkt.Name}</td>
-      <td>${punkt.Address}</td>
-      <td>${punkt.City}</td>
-      <td>${punkt.Country}</td>
+      <td>${p.Name}</td>
+      <td>${p.Address}</td>
+      <td>${p.City}</td>
+      <td>${p.Country}</td>
     `;
     tulemusteTabel.appendChild(rida);
   });
