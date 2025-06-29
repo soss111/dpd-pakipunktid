@@ -21,7 +21,7 @@ window.addEventListener("DOMContentLoaded", () => {
   otsing.addEventListener("input", () => {
     const q = otsing.value.toLowerCase();
     const filtreeritud = andmed.filter(p =>
-      (p.companyName + p.street + p.City + p.countryCode).toLowerCase().includes(q)
+      (p.companyName + p.street + p.addressLine2 + p.countryCode).toLowerCase().includes(q)
     );
     uuendaAndmed(filtreeritud);
   });
@@ -41,7 +41,7 @@ window.addEventListener("DOMContentLoaded", () => {
       rida.innerHTML = `
         <td>${p.companyName || "-"}</td>
         <td>${p.street || "-"}</td>
-        <td>${p.City || "-"}</td>
+        <td>${p.addressLine2 || "-"}</td>
         <td>${p.countryCode || "-"}</td>
       `;
       tbody.appendChild(rida);
@@ -49,7 +49,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (p.Latitude && p.Longitude) {
         const marker = L.marker([p.Latitude, p.Longitude])
           .addTo(kaart)
-          .bindPopup(`<strong>${p.companyName}</strong><br>${p.street}, ${p.City}`);
+          .bindPopup(`<strong>${p.companyName}</strong><br>${p.street}, ${p.addressLine2}`);
         markerid.push(marker);
       }
     });
