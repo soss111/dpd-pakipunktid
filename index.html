@@ -2,16 +2,19 @@
 <html lang="et">
 <head>
   <meta charset="UTF-8">
-  <title>DHL pakipunktid</title>
+  <title>DPD pakiautomaadid</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    input { padding: 6px; width: 300px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
     th { background-color: #f0f0f0; }
   </style>
 </head>
 <body>
-  <h2>DHL pakipunktid (DPD Baltics)</h2>
+  <h2>Otsi DPD pakiautomaate</h2>
+  <input type="text" id="otsing" placeholder="Sisesta linn või aadress..." oninput="filtreeri()">
+
   <table id="tabel">
     <thead>
       <tr>
@@ -24,6 +27,38 @@
     <tbody></tbody>
   </table>
 
-  <script src="script.js"></script>
+  <script>
+    let kõikAndmed = [];
+
+    fetch('https://dpdbaltics.com/PickupParcelShopData.json')
+      .then(res => res.json())
+      .then(data => {
+        kõikAndmed = data;
+        kuvaTabel(data);
+      });
+
+    function filtreeri() {
+      const sisend = document.getElementById("otsing").value.toLowerCase();
+      const filtreeritud = kõikAndmed.filter(p =>
+        (p.Name + p.Address + p.City + p.Country).toLowerCase().includes(sisend)
+      );
+      kuvaTabel(filtreeritud);
+    }
+
+    function kuvaTabel(andmed) {
+      const tbody = document.querySelector("#tabel tbody");
+      tbody.innerHTML = "";
+      andmed.forEach(p => {
+        const rida = document.createElement("tr");
+        rida.innerHTML = `
+          <td>${p.Name}</td>
+          <td>${p.Address}</td>
+          <td>${p.City}</td>
+          <td>${p.Country}</td>
+        `;
+        tbody.appendChild(rida);
+      });
+    }
+  </script>
 </body>
 </html>
