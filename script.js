@@ -21,7 +21,7 @@ window.addEventListener("DOMContentLoaded", () => {
   otsing.addEventListener("input", () => {
     const q = otsing.value.toLowerCase();
     const filtreeritud = andmed.filter(p =>
-      (p.companyName + p.Address + p.City + p.Country).toLowerCase().includes(q)
+      (p.companyName + p.Address + p.City + p.countryCode).toLowerCase().includes(q)
     );
     uuendaAndmed(filtreeritud);
   });
@@ -42,7 +42,7 @@ window.addEventListener("DOMContentLoaded", () => {
         <td>${p.companyName || "-"}</td>
         <td>${p.Address || "-"}</td>
         <td>${p.City || "-"}</td>
-        <td>${p.Country || "-"}</td>
+        <td>${p.countryCode || "-"}</td>
       `;
       tbody.appendChild(rida);
 
